@@ -12,6 +12,8 @@ __get_candidate_list() {
 }
 
 # Gets installed candidates list
+# FIXME This does not work, see this stackO question: https://stackoverflow.com/questions/53365555/incorrect-zsh-completion-script-output
+# Could not find a fix yet
 __get_current_installed_list() {
   echo `sdk current | sed "s/Using://g" | sed "s/\:.*//g"  | sed -e "s/[\t ]//g;/^$/d"`
 }
@@ -38,23 +40,27 @@ __describe_commands() {
 }
 
 __describe_install() {
-  local -a candidate_list
-  candidate_list=( `sdk list | grep --color=never  "$ sdk install" | sed 's/\$ sdk install //g' | sed -e 's/[\t ]//g;/^$/d'` )
-  _describe -t candidate_list "Candidates available" candidate_list && ret=0
+  local -a candidate_list_install
+  candidate_list_install=( $( __get_candidate_list ) )
+  _describe -t candidate_list_install "Candidates available for installation" candidate_list_install && ret=0
 }
 
-__describe_uninstall() { # FIXME THis is not working, it only displays candidate list rather than installed list
+__describe_uninstall() {
   local -a candidates_to_uninstall
-  candidates_to_uninstall=( `sdk current | sed "s/Using://g" | sed "s/\:.*//g"  | sed -e "s/[\t ]//g;/^$/d"` )
+  candidates_to_uninstall=( $( __get_current_installed_list ) )
   _describe -t candidates_to_uninstall "Uninstallable candidates" candidates_to_uninstall && ret=0
 }
 
 __describe_list() {
-  # TODO
+  local -a candidate_list
+  candidate_list=( $( __get_candidate_list ) )
+  _describe -t candidate_list "Candidates available for listing" candidate_list && ret=0
 }
 
 __describe_use() {
-  # TODO
+  local -a candidate_list_use
+  candidate_list_use=( $( __get_candidate_list ) )
+  _describe -t candidate_list_use "Candidates available for usage" candidate_list_use && ret=0
 }
 
 __describe_default() {
@@ -65,7 +71,7 @@ __describe_current() {
   # TODO
 }
 
-__describe_upgrade() { # FIXME THis is not working, it only displays candidate list
+__describe_upgrade() {
   # TODO
 }
 
@@ -89,10 +95,10 @@ function _sdk() {
   _arguments -C \
     '1: :->first_arg' \
     '2: :->second_arg' \
+    '3: :->third_arg' \
     && ret=0
-    #'3: :->third_arg' && ret=0
 
-    # TODO Add a third_arg handling
+
     case $state in
       first_arg)
         __describe_commands
@@ -127,6 +133,12 @@ function _sdk() {
             ;;
         esac
         ;;
+      third_arg)
+        case $candidate in
+          *)
+            echo "Work in progess"
+            ;;
+        esac
     esac
 
     return $ret
