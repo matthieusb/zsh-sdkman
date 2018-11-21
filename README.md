@@ -1,6 +1,6 @@
 # Sdkman Zsh plugin
 
-This sdkman plugin aims at making sdkman usage easier with completion scripts.
+This sdkman plugin aims at making [sdkman](https://sdkman.io) usage easier with completion scripts.
 
 TODO ADD A USAGE GIF HERE
 
