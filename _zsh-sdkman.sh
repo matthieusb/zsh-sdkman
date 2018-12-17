@@ -1,6 +1,8 @@
 #compdef sdk
 
 zstyle ':completion:*:descriptions' format '%B%d%b'
+
+# TODO See if we keep the following "zstyle" lines (try and find their actual effect)
 # zstyle ':completion::complete:sdk:*:commands' group-name commands
 # zstyle ':completion::all_candidates:sdk:*:all_candidates' group-name all_candidates
 # zstyle ':completion::candidates_to_uninstall:sdk:*:candidates_to_uninstall' group-name candidates_to_uninstall
@@ -8,14 +10,12 @@ zstyle ':completion:*:descriptions' format '%B%d%b'
 
 # Gets candidate lists and removes all unecessery things just to get candidate names
 __get_candidate_list() {
-  echo `sdk list | grep --color=never  "$ sdk install" | sed 's/\$ sdk install //g' | sed -e 's/[\t ]//g;/^$/d'`
+  cat $ZSH_SDKMAN_CANDIDATE_LIST_HOME
 }
 
 # Gets installed candidates list
-# FIXME This does not work, see this stackO question: https://stackoverflow.com/questions/53365555/incorrect-zsh-completion-script-output
-# Could not find a fix yet
 __get_current_installed_list() {
-  echo `sdk current | sed "s/Using://g" | sed "s/\:.*//g"  | sed -e "s/[\t ]//g;/^$/d"`
+  cat $ZSH_SDKMAN_INSTALLED_LIST_HOME
 }
 
 __describe_commands() {
@@ -42,24 +42,27 @@ __describe_commands() {
 __describe_install() {
   local -a candidate_list_install
   candidate_list_install=( $( __get_candidate_list ) )
-  _describe -t candidate_list_install "Candidates available for installation" candidate_list_install && ret=0
+  _describe -t candidate_list_install "Candidates available for install" candidate_list_install && ret=0
 }
 
 __describe_uninstall() {
   local -a candidates_to_uninstall
   candidates_to_uninstall=( $( __get_current_installed_list ) )
-  _describe -t candidates_to_uninstall "Uninstallable candidates" candidates_to_uninstall && ret=0
+  _describe -t candidates_to_uninstall "Candidates to uninstall" candidates_to_uninstall && ret=0
 }
 
 __describe_list() {
-  local -a candidate_list
-  candidate_list=( $( __get_candidate_list ) )
-  _describe -t candidate_list "Candidates available for listing" candidate_list && ret=0
+  sdk current && ret=0
+
+  # local -a candidate_list
+  # candidate_list=( $( __get_current_installed_list ) )
+  # _describe -t candidate_list "Candidates available for version listing" candidate_list && ret=0
 }
 
+# TODO Add describe use when candidate is selected
 __describe_use() {
   local -a candidate_list_use
-  candidate_list_use=( $( __get_candidate_list ) )
+  candidate_list_use=( $( __get_current_installed_list ) )
   _describe -t candidate_list_use "Candidates available for usage" candidate_list_use && ret=0
 }
 
