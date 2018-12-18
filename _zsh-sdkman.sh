@@ -23,19 +23,22 @@ __get_current_installed_list() {
 }
 
 # Gets a candidate currently installed versions (the ones preceded by a "*")
-# WARNING ! This function takes the candidate label as a parameter to properly work
+# Parameters:
+# $1: chosen candidate label
 __get_installed_candidate_installed_versions() {
   # TODO
 }
 
 # Gets versions of a candidate that are not yet installed
-# WARNING ! This function takes the candidate label as a parameter to properly work
+# Parameters:
+# $1: chosen candidate label
 __get_installed_candidate_not_installed_versions() {
   # TODO
 }
 
 # Gets a candidate currently used version (the ones preceded by ">")
-# WARNING ! This function takes the candidate label as a parameter to properly work
+# Parameters:
+# $1: chosen candidate label
 __get_installed_candidate_used_version() {
   # TODO
 }
@@ -69,47 +72,22 @@ __describe_commands() {
 ##### SECOND ARG FUNCTIONS
 ########################################################
 
-__describe_install() {
-  local -a candidate_list_install
-  candidate_list_install=( $( __get_candidate_list ) )
-  _describe -t candidate_list_install "Candidates available for install" candidate_list_install && ret=0
-}
-
-__describe_uninstall() {
-  local -a candidates_to_uninstall
-  candidates_to_uninstall=( $( __get_current_installed_list ) )
-  _describe -t candidates_to_uninstall "Candidates to uninstall" candidates_to_uninstall && ret=0
-}
-
-__describe_list() {
+# Displays ALL candidates available
+# Parameters:
+# $1: label to display
+__describe_candidate_list() {
   local -a candidate_list
-  candidate_list=( $( __get_current_installed_list ) )
-  _describe -t candidate_list "Candidates available for version listing" candidate_list && ret=0
+  candidate_list=( $( __get_candidate_list ) )
+  _describe -t candidate_list $1 candidate_list && ret=0
 }
 
-# TODO Add describe use when candidate is selected
-__describe_use() {
-  local -a candidate_list_use
-  candidate_list_use=( $( __get_current_installed_list ) )
-  _describe -t candidate_list_use "Candidates available for usage" candidate_list_use && ret=0
-}
-
-__describe_default() {
-  local -a candidate_list_default
-  candidate_list_default=( $( __get_current_installed_list ) )
-  _describe -t candidate_list_default "Candidates available for default setting" candidate_list_default && ret=0
-}
-
-__describe_current() {
-  local -a candidate_list_current
-  candidate_list_current=( $( __get_current_installed_list ) )
-  _describe -t candidate_list_current "Candidates available" candidate_list_current && ret=0
-}
-
-__describe_upgrade() {
-  local -a candidate_list_upgrade
-  candidate_list_upgrade=( $( __get_current_installed_list ) )
-  _describe -t candidate_list_upgrade "Candidates available for default setting" candidate_list_upgrade && ret=0
+# Displays installed candidates available
+# Parameters:
+# $1: label to display
+__describe_current_installed_list() {
+  local -a current_installed_list
+  current_installed_list=( $( __get_current_installed_list ) )
+  _describe -t current_installed_list $1 current_installed_list && ret=0
 }
 
 __describe_offline() {
@@ -152,25 +130,25 @@ function _sdk() {
       second_arg)
         case $target in
           install)
-            __describe_install
-            ;;
-          uninstall)
-            __describe_uninstall
+            __describe_candidate_list "Candidates available for install"
             ;;
           list)
-            __describe_list
+            __describe_candidate_list "Candidates available for version listing"
+            ;;
+          uninstall)
+            __describe_current_installed_list "Candidates available for uninstall"
             ;;
           use)
-            __describe_use
+            __describe_current_installed_list "Candidates available for usage"
             ;;
           default)
-            __describe_default
+            __describe_current_installed_list "Candidates available for default setting"
             ;;
           current)
-            __describe_current
+            __describe_current_installed_list "Candidates available"
             ;;
           upgrade)
-            __describe_upgrade
+            __describe_current_installed_list "Candidates available for default setting"
             ;;
           offline)
             __describe_offline
