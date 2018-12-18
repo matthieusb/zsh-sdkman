@@ -8,6 +8,10 @@ zstyle ':completion:*:descriptions' format '%B%d%b'
 # zstyle ':completion::candidates_to_uninstall:sdk:*:candidates_to_uninstall' group-name candidates_to_uninstall
 # zstyle ':completion::complete:sdk::' list-grouped
 
+########################################################
+##### UTILITY FUNCTIONS
+########################################################
+
 # Gets candidate lists and removes all unecessery things just to get candidate names
 __get_candidate_list() {
   cat $ZSH_SDKMAN_CANDIDATE_LIST_HOME
@@ -17,6 +21,28 @@ __get_candidate_list() {
 __get_current_installed_list() {
   cat $ZSH_SDKMAN_INSTALLED_LIST_HOME
 }
+
+# Gets a candidate currently installed versions (the ones preceded by a "*")
+# WARNING ! This function takes the candidate label as a parameter to properly work
+__get_installed_candidate_installed_versions() {
+  # TODO
+}
+
+# Gets versions of a candidate that are not yet installed
+# WARNING ! This function takes the candidate label as a parameter to properly work
+__get_installed_candidate_not_installed_versions() {
+  # TODO
+}
+
+# Gets a candidate currently used version (the ones preceded by ">")
+# WARNING ! This function takes the candidate label as a parameter to properly work
+__get_installed_candidate_used_version() {
+  # TODO
+}
+
+########################################################
+##### FIRST ARG FUNCTIONS
+########################################################
 
 __describe_commands() {
   local -a commands
@@ -39,6 +65,10 @@ __describe_commands() {
   _describe -t commands "Commands" commands && ret=0
 }
 
+########################################################
+##### SECOND ARG FUNCTIONS
+########################################################
+
 __describe_install() {
   local -a candidate_list_install
   candidate_list_install=( $( __get_candidate_list ) )
@@ -52,11 +82,9 @@ __describe_uninstall() {
 }
 
 __describe_list() {
-  sdk current && ret=0
-
-  # local -a candidate_list
-  # candidate_list=( $( __get_current_installed_list ) )
-  # _describe -t candidate_list "Candidates available for version listing" candidate_list && ret=0
+  local -a candidate_list
+  candidate_list=( $( __get_current_installed_list ) )
+  _describe -t candidate_list "Candidates available for version listing" candidate_list && ret=0
 }
 
 # TODO Add describe use when candidate is selected
@@ -67,15 +95,21 @@ __describe_use() {
 }
 
 __describe_default() {
-  # TODO
+  local -a candidate_list_default
+  candidate_list_default=( $( __get_current_installed_list ) )
+  _describe -t candidate_list_default "Candidates available for default setting" candidate_list_default && ret=0
 }
 
 __describe_current() {
-  # TODO
+  local -a candidate_list_current
+  candidate_list_current=( $( __get_current_installed_list ) )
+  _describe -t candidate_list_current "Candidates available" candidate_list_current && ret=0
 }
 
 __describe_upgrade() {
-  # TODO
+  local -a candidate_list_upgrade
+  candidate_list_upgrade=( $( __get_current_installed_list ) )
+  _describe -t candidate_list_upgrade "Candidates available for default setting" candidate_list_upgrade && ret=0
 }
 
 __describe_offline() {
@@ -89,6 +123,16 @@ __describe_offline() {
   _describe -t offline "Offline" offline && ret=0
 }
 
+########################################################
+##### THIRD ARG FUNCTIONS
+########################################################
+
+# TODO
+
+########################################################
+##### MAIN FUNCTION AND EXECUTION
+########################################################
+
 function _sdk() {
   local ret=1
 
@@ -100,7 +144,6 @@ function _sdk() {
     '2: :->second_arg' \
     '3: :->third_arg' \
     && ret=0
-
 
     case $state in
       first_arg)
@@ -137,6 +180,7 @@ function _sdk() {
         esac
         ;;
       third_arg)
+        # TODO Don't case on candidat, still case on $target and use candidate as a parameter
         case $candidate in
           *)
             echo "Work in progess"
