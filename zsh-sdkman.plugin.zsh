@@ -42,6 +42,9 @@ export ZSH_SDKMAN_INSTALLED_CANDIDATES_FILE_NAME=installed-candidates
 export ZSH_SDKMAN_NOT_INSTALLED_CANDIDATES_FILE_NAME=not-installed-candidates
 export ZSH_SDKMAN_ALL_CANDIDATES_FILE_NAME=all-candidates
 
+SDKMAN_LAST_REFRESH_TIMESTAMP_FILE=$ZSH_SDKMAN_DIR_LOCAL/last-refresh
+TIMESTAMP_INTERVAL_IN_SECONDS=43200 # 12 hours
+
 ########################################################
 ##### FOLDER MANAGEMENT
 ########################################################
@@ -76,7 +79,7 @@ __generate_all_candidate_folders_and_files() {
 }
 
 ########################################################
-##### UTILITY FUNCTIONS
+##### SDK COMMANDS
 ########################################################
 
 _sdkman_get_candidate_and_versions_lists_into_files() {
@@ -111,11 +114,15 @@ __get_installed_candidate_not_installed_versions() {
 }
 
 ########################################################
+##### PERIOD REFRESH FUNCTIONS
+########################################################
+__persist_current_timestamp_in_file() {
+  date +%s > $SDKMAN_LAST_REFRESH_TIMESTAMP_FILE
+}
+
+########################################################
 ##### MAIN EXECUTION
 ########################################################
-
-# TODO VERY IMPORTANT: add a feature to only relaunch the whole scripts every X hours (To be dtermined)
-# TODO VERY IMPORTANT: add a feature to force reload folders and files
 
 # "sdk" command is not found if we don't do this
 source "$SDKMAN_DIR_LOCAL/bin/sdkman-init.sh"
@@ -128,4 +135,32 @@ _init_zsh-sdkman_plugin() {
   _sdkman_get_current_installed_list_into_file "$@"
 }
 
-_init_zsh-sdkman_plugin
+# Only refreshes the file containing info for completion when:
+# - It is first usage and those files aren't there
+# - The files haven't been refreshed for at least 12 hours
+_sdk-refresh-completion-files-auto() {
+  if [ ! -f "$SDKMAN_LAST_REFRESH_TIMESTAMP_FILE" ] # File not found (First usage)
+  then
+      _init_zsh-sdkman_plugin
+      __persist_current_timestamp_in_file
+  else
+    local -a previous_timestamp
+    local -a current_timestamp
+    local -a previous_timestamp_plus_2_hours
+
+    previous_timestamp=`cat $SDKMAN_LAST_REFRESH_TIMESTAMP_FILE`
+    previous_timestamp_plus_2_hours=$(($previous_timestamp + $TIMESTAMP_INTERVAL_IN_SECONDS))
+    current_timestamp=`date +%s`
+
+    if [ "$current_timestamp" -gt "$previous_timestamp_plus_2_hours" ]; then
+      _init_zsh-sdkman_plugin
+    fi
+  fi
+}
+
+# Manual command to be used by the users for troubleshooting
+sdk-refresh-completion-files() {
+  _init_zsh-sdkman_plugin
+}
+
+_sdk-refresh-completion-files-auto

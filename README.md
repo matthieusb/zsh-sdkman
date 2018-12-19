@@ -17,7 +17,7 @@ This plugin can be installed by adding `antigen bundle matthieusb/zsh-zsdkman` t
 This plugin can be installed by adding `zgen load matthieusb/zsh-zsdkman` to your `.zshrc` file in the same function you're doing your other `zgen load` calls in. [Zgen](https://github.com/tarjoilija/zgen) will automatically clone the repositories for you when you do a `zgen save`.
 
 
-### [Simple Oh-My-Zsh](http://ohmyz.sh/)
+### [Simple Oh-My-Zsh/Manual install](http://ohmyz.sh/)
 
 Go to your *oh-my-zsh* folder and then in *custom/plugins* and clone this repository:
 
@@ -35,6 +35,7 @@ plugins=(... zsh-sdkman)
 
 There are several packages that you'll need for this plugin to work:
 * sdkman of course
+* `date`
 * `grep` and `egrep`
 * `sed`
 
