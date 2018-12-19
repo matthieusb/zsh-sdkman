@@ -14,34 +14,52 @@ zstyle ':completion:*:descriptions' format '%B%d%b'
 
 # Gets candidate lists and removes all unecessery things just to get candidate names
 __get_candidate_list() {
-  cat $ZSH_SDKMAN_CANDIDATE_LIST_HOME
+  cat $ZSH_SDKMAN_CANDIDATE_LIST_FILE
 }
 
 # Gets installed candidates list
 __get_current_installed_list() {
-  cat $ZSH_SDKMAN_INSTALLED_LIST_HOME
+  cat $ZSH_SDKMAN_INSTALLED_LIST_FILE
 }
 
 # Gets a candidate available versions (All of them, including already installed, not installed ...)
 # Parameters:
 # $1 chosen candidate label
 __get_installed_candidate_all_versions() {
-  sdk list $1 | egrep --color=never -i -v ".*(local version|installed|currently in use).*" | egrep --color=never -v -i "Available .* Versions" | egrep --color=never -v "^=*$"
-} # TODO This is bugged the same way the sdk list/sdk current was, we have to use files again in the script init. Move this to the plugin init.
+  local -a chosen_candidate_home
+  local -a chosen_candidate_all_versions_file
+
+  chosen_candidate_home=$ZSH_SDKMAN_CANDIDATES_HOME/$1
+  chosen_candidate_all_versions_file=$chosen_candidate_home/$ZSH_SDKMAN_ALL_CANDIDATES_FILE_NAME
+
+  cat $chosen_candidate_all_versions_file
+}
 
 # Gets a candidate currently installed versions (the ones preceded by a "*")
 # Parameters:
 # $1: chosen candidate label
 __get_installed_candidate_installed_versions() {
-  __get_installed_candidate_all_versions $1 | egrep "\*" | sed 's/\*//g' | sed 's/>//g' | sed -e 's/[\t ]/\n/g;/^$/d' | sed -r '/^\s*$/d'
-} # TODO This is bugged the same way the sdk list/sdk current was, we have to use files again in the script init. Move this to the plugin init.
+  local -a chosen_candidate_home
+  local -a chosen_candidate_installed_versions_file
+
+  chosen_candidate_home=$ZSH_SDKMAN_CANDIDATES_HOME/$1
+  chosen_candidate_installed_versions_file=$chosen_candidate_home/$ZSH_SDKMAN_INSTALLED_CANDIDATES_FILE_NAME
+
+  cat $chosen_candidate_installed_versions_file
+}
 
 # Gets versions of a candidate that are not yet installed
 # Parameters:
 # $1: chosen candidate label
 __get_installed_candidate_not_installed_versions() {
-  __get_installed_candidate_all_versions $1 | egrep -v "\*" | sed 's/\*//g' | sed 's/>//g' | sed -e 's/[\t ]/\n/g;/^$/d' | sed -r '/^\s*$/d'
-} # TODO This is bugged the same way the sdk list/sdk current was, we have to use files again in the script init. Move this to the plugin init.
+  local -a chosen_candidate_home
+  local -a chosen_candidate_not_installed_versions_file
+
+  chosen_candidate_home=$ZSH_SDKMAN_CANDIDATES_HOME/$1
+  chosen_candidate_not_installed_versions_file=$chosen_candidate_home/$ZSH_SDKMAN_NOT_INSTALLED_CANDIDATES_FILE_NAME
+
+  cat $chosen_candidate_not_installed_versions_file
+}
 
 ########################################################
 ##### FIRST ARG FUNCTIONS
@@ -105,18 +123,28 @@ __describe_offline() {
 ##### THIRD ARG FUNCTIONS
 ########################################################
 
-# TODO Doc
+# Parameters:
+# $1: chosen candidate label
+__describe_candidate_all_versions() {
+  local -a installed_candidate_all_versions
+  installed_candidate_all_versions=( $( __get_installed_candidate_all_versions $1 ) )
+  _describe -t installed_candidate_all_versions "All versions for $1" installed_candidate_all_versions && ret=0
+}
+
 # Parameters:
 # $1: chosen candidate label
 __describe_candidate_installed_versions() {
-  # TODO
+  local -a installed_candidate_installed_versions
+  installed_candidate_installed_versions=( $( __get_installed_candidate_installed_versions $1 ) )
+  _describe -t installed_candidate_installed_versions "Installed versions for $1" installed_candidate_installed_versions && ret=0
 }
 
-# TODO Doc
 # Parameters:
 # $1: chosen candidate label
 __describe_candidate_available_versions() {
-  # TODO
+  local -a installed_candidate_available_versions
+  installed_candidate_available_versions=( $( __get_installed_candidate_not_installed_versions $1 ) )
+  _describe -t installed_candidate_available_versions "Available (not installed) versions for $1" installed_candidate_available_versions && ret=0
 }
 
 ########################################################
@@ -127,7 +155,7 @@ function _sdk() {
   local ret=1
 
   local target=$words[2]
-  local candidate=$word[3]
+  local candidate=$words[3]
 
   _arguments -C \
     '1: :->first_arg' \
@@ -172,18 +200,16 @@ function _sdk() {
       third_arg)
         case $target in
           install)
-            # TODO
+            __describe_candidate_available_versions $candidate
             ;;
           uninstall)
+            __describe_candidate_installed_versions $candidate
             ;;
           use)
-            # TODO
+            __describe_candidate_all_versions $candidate
             ;;
           default)
-            # TODO
-            ;;
-          upgrade)
-            # TODO
+            __describe_candidate_installed_versions $candidate
             ;;
           *)
             ;;

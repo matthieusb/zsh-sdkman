@@ -1,6 +1,6 @@
-# --------------------------
-# -------- Aliases
-# --------------------------
+########################################################
+##### ALIASES
+########################################################
 alias sdki='sdk install'
 alias sdkun='sdk uninstall'
 alias list='sdk list'
@@ -30,33 +30,102 @@ alias sdkf='sdk flush'
 # A better approach would be welcome
 SDKMAN_DIR_LOCAL=~/.sdkman
 
-# Custom variables for later
-# TODO: add a specific folder and move everything in it
-export ZSH_SDKMAN_CANDIDATE_LIST_HOME=~/.zsh-sdkman.candidate-list
-export ZSH_SDKMAN_INSTALLED_LIST_HOME=~/.zsh-sdkman.current-installed-list
+# Custom variables for later in this script and in the completion script
+export ZSH_SDKMAN_DIR_LOCAL=~/.zsh-sdkman
+
+export ZSH_SDKMAN_CANDIDATES_HOME=$ZSH_SDKMAN_DIR_LOCAL/candidates
+
+export ZSH_SDKMAN_CANDIDATE_LIST_FILE=$ZSH_SDKMAN_DIR_LOCAL/candidate-list
+export ZSH_SDKMAN_INSTALLED_LIST_FILE=$ZSH_SDKMAN_DIR_LOCAL/current-installed-list
+
+export ZSH_SDKMAN_INSTALLED_CANDIDATES_FILE_NAME=installed-candidates
+export ZSH_SDKMAN_NOT_INSTALLED_CANDIDATES_FILE_NAME=not-installed-candidates
+export ZSH_SDKMAN_ALL_CANDIDATES_FILE_NAME=all-candidates
+
+########################################################
+##### FOLDER MANAGEMENT
+########################################################
+
+# Creates folders necessary to work with the plugin
+__init_plugin_folder() {
+  mkdir -p $ZSH_SDKMAN_DIR_LOCAL
+  mkdir -p $ZSH_SDKMAN_CANDIDATES_HOME
+}
+
+# Generates the folders for all candidates available in sdkman
+# Adds files containing the necessary info afterwards
+# WARNING: this method takes time and should be launched in background
+__generate_all_candidate_folders_and_files() {
+  while read candidate; do
+    local -a current_candidate_folder_path
+    current_candidate_folder_path=$ZSH_SDKMAN_CANDIDATES_HOME/$candidate
+
+    mkdir -p $current_candidate_folder_path
+
+    # Filling not installed candidates file
+    __get_installed_candidate_not_installed_versions > $current_candidate_folder_path/$ZSH_SDKMAN_NOT_INSTALLED_CANDIDATES_FILE_NAME $candidate
+
+    # Filling installed candidates file
+    __get_installed_candidate_installed_versions > $current_candidate_folder_path/$ZSH_SDKMAN_INSTALLED_CANDIDATES_FILE_NAME $candidate
+
+    # Filling all_candidates file
+    __get_installed_candidate_installed_versions > $current_candidate_folder_path/$ZSH_SDKMAN_ALL_CANDIDATES_FILE_NAME $candidate
+    __get_installed_candidate_not_installed_versions >> $current_candidate_folder_path/$ZSH_SDKMAN_ALL_CANDIDATES_FILE_NAME $candidate
+
+  done < $ZSH_SDKMAN_CANDIDATE_LIST_FILE
+}
 
 ########################################################
 ##### UTILITY FUNCTIONS
 ########################################################
 
-_sdkman_get_candidate_list() {
-  (sdk list | grep --color=never  "$ sdk install" | sed 's/\$ sdk install //g' | sed -e 's/[\t ]//g;/^$/d' > $ZSH_SDKMAN_CANDIDATE_LIST_HOME &)
+_sdkman_get_candidate_and_versions_lists_into_files() {
+  (sdk list | grep --color=never  "$ sdk install" | sed 's/\$ sdk install //g' | sed -e 's/[\t ]//g;/^$/d' > $ZSH_SDKMAN_CANDIDATE_LIST_FILE \
+  && __generate_all_candidate_folders_and_files &
+  )
 }
 
-_sdkman_get_current_installed_list() {
-  (sdk current | sed "s/Using://g" | sed "s/\:.*//g"  | sed -e "s/[\t ]//g;/^$/d" > $ZSH_SDKMAN_INSTALLED_LIST_HOME &)
+_sdkman_get_current_installed_list_into_file() {
+  (sdk current | sed "s/Using://g" | sed "s/\:.*//g"  | sed -e "s/[\t ]//g;/^$/d" > $ZSH_SDKMAN_INSTALLED_LIST_FILE &)
+}
+
+# Gets a candidate available versions (All of them, including already installed, not installed ...)
+# Parameters:
+# $1 chosen candidate label
+__get_installed_candidate_all_versions() {
+  sdk list $1 | egrep --color=never -i -v ".*(local version|installed|currently in use).*" | egrep --color=never -v -i "Available .* Versions" | egrep --color=never -v "^=*$"
+}
+
+# Gets a candidate currently installed versions (the ones preceded by a "*")
+# Parameters:
+# $1: chosen candidate label
+__get_installed_candidate_installed_versions() {
+  __get_installed_candidate_all_versions $1 | egrep "\*" | sed 's/\*//g' | sed 's/>//g' | sed -e 's/[\t ]/\n/g;/^$/d' | sed -r '/^\s*$/d'
+}
+
+# Gets versions of a candidate that are not yet installed
+# Parameters:
+# $1: chosen candidate label
+__get_installed_candidate_not_installed_versions() {
+  __get_installed_candidate_all_versions $1 | egrep -v "\*" | sed 's/\*//g' | sed 's/>//g' | sed -e 's/[\t ]/\n/g;/^$/d' | sed -r '/^\s*$/d'
 }
 
 ########################################################
 ##### MAIN EXECUTION
 ########################################################
 
-# TODO: Add the candidate version files creation to correct the bugs with the third arg
+# TODO VERY IMPORTANT: add a feature to only relaunch the whole scripts every X hours (To be dtermined)
+# TODO VERY IMPORTANT: add a feature to force reload folders and files
 
 # "sdk" command is not found if we don't do this
 source "$SDKMAN_DIR_LOCAL/bin/sdkman-init.sh"
 
 # Initialize files with available candidate list and currently installed candidates
-# TODO Mutualize everything in another function
-_sdkman_get_candidate_list "$@"
-_sdkman_get_current_installed_list "$@"
+_init_zsh-sdkman_plugin() {
+  __init_plugin_folder
+
+  _sdkman_get_candidate_and_versions_lists_into_files "$@"
+  _sdkman_get_current_installed_list_into_file "$@"
+}
+
+_init_zsh-sdkman_plugin
