@@ -2,7 +2,7 @@
 
 This sdkman plugin aims at making [sdkman](https://sdkman.io) usage easier with completion scripts.
 
-TODO ADD A USAGE GIF HERE
+![zsh-sdkman usage gif](./zsh-sdkman-usage.gif?raw=true "Optional Title")
 
 ## Installation
 
@@ -41,6 +41,19 @@ There are several packages that you'll need for this plugin to work:
 
 ## Usage
 
+### First launch and completion update
+
+On first launch, the script has to compute a few things in order to make the completion scripts work. It can take a while (I'd say five minutes tops) to be done so be patient.
+This operation is repeated every 12 hours automatically.
+
+**IMPORTANT**: if you do new installations on your sdkman candidate or jsut play around with new versions, uninstallations or updates, **DON'T FORGET** to refresh the completion script files with the following comment:
+
+```
+sdk-refresh-completion-files
+```
+
+### Usage help
+
 Sdkman can be used as usual:
 
 ```
@@ -71,8 +84,19 @@ Usage: sdk <command> [candidate] [version]
                  eg: $ sdk install groovy
 ```
 
-Some aliases are available:
+Some aliases are available through this plugin:
 
 ```
-TODO
+alias sdki='sdk install'
+alias sdkun='sdk uninstall'
+alias list='sdk list'
+alias sdku='sdk use'
+alias sdkd='sdk default'
+alias sdkc='sdk current'
+alias sdkup='sdk upgrade'
+alias sdkv='sdk version'
+alias sdkb='sdk broadcast'
+alias sdko='sdk offline'
+alias sdksu='sdk selfupdate'
+alias sdkf='sdk flush'
 ```
