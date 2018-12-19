@@ -22,26 +22,26 @@ __get_current_installed_list() {
   cat $ZSH_SDKMAN_INSTALLED_LIST_HOME
 }
 
+# Gets a candidate available versions (All of them, including already installed, not installed ...)
+# Parameters:
+# $1 chosen candidate label
+__get_installed_candidate_all_versions() {
+  sdk list $1 | egrep --color=never -i -v ".*(local version|installed|currently in use).*" | egrep --color=never -v -i "Available .* Versions" | egrep --color=never -v "^=*$"
+} # TODO This is bugged the same way the sdk list/sdk current was, we have to use files again in the script init. Move this to the plugin init.
+
 # Gets a candidate currently installed versions (the ones preceded by a "*")
 # Parameters:
 # $1: chosen candidate label
 __get_installed_candidate_installed_versions() {
-  # TODO
-}
+  __get_installed_candidate_all_versions $1 | egrep "\*" | sed 's/\*//g' | sed 's/>//g' | sed -e 's/[\t ]/\n/g;/^$/d' | sed -r '/^\s*$/d'
+} # TODO This is bugged the same way the sdk list/sdk current was, we have to use files again in the script init. Move this to the plugin init.
 
 # Gets versions of a candidate that are not yet installed
 # Parameters:
 # $1: chosen candidate label
 __get_installed_candidate_not_installed_versions() {
-  # TODO
-}
-
-# Gets a candidate currently used version (the ones preceded by ">")
-# Parameters:
-# $1: chosen candidate label
-__get_installed_candidate_used_version() {
-  # TODO
-}
+  __get_installed_candidate_all_versions $1 | egrep -v "\*" | sed 's/\*//g' | sed 's/>//g' | sed -e 's/[\t ]/\n/g;/^$/d' | sed -r '/^\s*$/d'
+} # TODO This is bugged the same way the sdk list/sdk current was, we have to use files again in the script init. Move this to the plugin init.
 
 ########################################################
 ##### FIRST ARG FUNCTIONS
@@ -105,7 +105,19 @@ __describe_offline() {
 ##### THIRD ARG FUNCTIONS
 ########################################################
 
-# TODO
+# TODO Doc
+# Parameters:
+# $1: chosen candidate label
+__describe_candidate_installed_versions() {
+  # TODO
+}
+
+# TODO Doc
+# Parameters:
+# $1: chosen candidate label
+__describe_candidate_available_versions() {
+  # TODO
+}
 
 ########################################################
 ##### MAIN FUNCTION AND EXECUTION
@@ -158,10 +170,22 @@ function _sdk() {
         esac
         ;;
       third_arg)
-        # TODO Don't case on candidat, still case on $target and use candidate as a parameter
-        case $candidate in
+        case $target in
+          install)
+            # TODO
+            ;;
+          uninstall)
+            ;;
+          use)
+            # TODO
+            ;;
+          default)
+            # TODO
+            ;;
+          upgrade)
+            # TODO
+            ;;
           *)
-            echo "Work in progess"
             ;;
         esac
     esac

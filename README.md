@@ -31,6 +31,13 @@ And then, add to to your *.zshrc* plugin list like this:
 plugins=(... zsh-sdkman)
 ```
 
+## Dependencies
+
+There are several packages that you'll need for this plugin to work:
+* sdkman of course
+* `grep` and `egrep`
+* `sed`
+
 ## Usage
 
 Sdkman can be used as usual:
