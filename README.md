@@ -46,7 +46,7 @@ There are several packages that you'll need for this plugin to work:
 On first launch, the script has to compute a few things in order to make the completion scripts work. It can take a while (I'd say five minutes tops) to be done so be patient.
 This operation is repeated every 12 hours automatically.
 
-**IMPORTANT**: if you do new installations on your sdkman candidate or jsut play around with new versions, uninstallations or updates, **DON'T FORGET** to refresh the completion script files with the following comment:
+**IMPORTANT**: if you do new installations on your sdkman candidate or just play around with new versions, uninstallations or updates, **DON'T FORGET** to refresh the completion script files with the following command:
 
 ```
 sdk-refresh-completion-files
