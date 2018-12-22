@@ -1,8 +1,8 @@
 FROM ubuntu:18.04
-SHELL ["/bin/bash", "-c"]
 
 # -- Env variables
-env TERM 'xterm-256color'
+ENV TERM "xterm-256color"
+ENV SDKMAN_DIR "/root/.sdkman"
 
 # -- apps install
 RUN apt-get update
@@ -16,9 +16,7 @@ RUN zsh
 
 # -- sdkman install
 RUN curl -s "https://get.sdkman.io" | bash
-RUN source "/root/.sdkman/bin/sdkman-init.sh"
-# RUN source ~/.zshrc
-RUN /bin/bash -l -c "sdk version"
+RUN /bin/bash -c "source '.sdkman/bin/sdkman-init.sh' && sdk version"
 
 # -- zsh-sdkman plugin install
 WORKDIR .oh-my-zsh/custom/plugins
@@ -26,3 +24,5 @@ WORKDIR .oh-my-zsh/custom/plugins
 
 # RUN git clone https://github.com/matthieusb/zsh-sdkman.git
 # COPY ./.zshrc .
+
+ENTRYPOINT sh
