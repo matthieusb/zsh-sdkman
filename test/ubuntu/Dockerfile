@@ -14,24 +14,35 @@ RUN wget https://github.com/jwilder/dockerize/releases/download/$DOCKERIZE_VERSI
     && tar -C /usr/local/bin -xzvf dockerize-linux-amd64-$DOCKERIZE_VERSION.tar.gz \
     && rm dockerize-linux-amd64-$DOCKERIZE_VERSION.tar.gz
 
-# -- zsh/oh-my-zsh configuration
+# -- sdkman install
 WORKDIR /root
 
-RUN wget https://github.com/robbyrussell/oh-my-zsh/raw/master/tools/install.sh -O - | zsh || true
-RUN zsh
-COPY ./.zshrc .
-
-# -- sdkman install
 RUN curl -s "https://get.sdkman.io" | bash
 RUN /bin/bash -c "source '.sdkman/bin/sdkman-init.sh' && sdk version"
 RUN /bin/bash -c "source '.sdkman/bin/sdkman-init.sh' && sdk install java 11.0.1-open"
 RUN /bin/bash -c "source '.sdkman/bin/sdkman-init.sh' && sdk install maven 3.3.9 && sdk install maven 3.5.0"
 
+# -- zsh/oh-my-zsh configuration
+RUN wget https://github.com/robbyrussell/oh-my-zsh/raw/master/tools/install.sh -O - | zsh || true
+COPY ./.zshrc .
+RUN zsh
+
 # -- zsh-sdkman plugin install
 WORKDIR .oh-my-zsh/custom/plugins
 RUN git clone https://github.com/matthieusb/zsh-sdkman.git
-RUN /usr/bin/zsh -c "source ~/.zshrc"
 
-WORKDIR $ZSH_SDKMAN_CANDIDATES_DIR
+# -- shunit install
+WORKDIR /root
+
+RUN wget https://github.com/kward/shunit2/archive/v2.1.7.tar.gz -O shunit.tar.gz
+RUN tar -xvf shunit.tar.gz
+RUN rm shunit.tar.gz
+RUN mv shunit2-2.1.7 shunit
+
+# -- adding test script and configuring for zsh
+COPY ./launch_tests.sh .
+COPY ./candidates_tests.sh .
+RUN chmod +x ./launch_tests.sh
+RUN chmod +x ./candidates_tests.sh
 
 ENTRYPOINT zsh
