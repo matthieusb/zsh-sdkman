@@ -89,14 +89,14 @@ _sdkman_get_candidate_and_versions_lists_into_files() {
 }
 
 _sdkman_get_current_installed_list_into_file() {
-  (sdk current | sed "s/Using://g" | sed "s/\:.*//g"  | sed -e "s/[\t ]//g;/^$/d" > $ZSH_SDKMAN_INSTALLED_LIST_FILE &)
+  (sdk current | sed "s/Using://g" | sed "s/\:.*//g"  | sed -e "s/[\t ]//g;/^$/d" | egrep --color=never -i -v ".*(sdkupdate|WARNING).*" > $ZSH_SDKMAN_INSTALLED_LIST_FILE &)
 }
 
 # Gets a candidate available versions (All of them, including already installed, not installed ...)
 # Parameters:
 # $1 chosen candidate label
 __get_installed_candidate_all_versions() {
-  sdk list $1 | egrep --color=never -i -v ".*(local version|installed|currently in use).*" | egrep --color=never -v -i "Available .* Versions" | egrep --color=never -v "^=*$"
+  sdk list $1 | egrep --color=never -i -v ".*(local version|installed|currently in use).*" | egrep --color=never -v -i "Available .* Versions" | egrep --color=never -v "^=*$" | egrep --color=never -i -v ".*(sdk update|WARNING).*"
 }
 
 # Gets a candidate currently installed versions (the ones preceded by a "*")
