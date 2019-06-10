@@ -38,6 +38,7 @@ There are several packages that you'll need for this plugin to work:
 * `date`
 * `grep` and `egrep`
 * `sed`
+* `awk`
 
 ## Usage
 

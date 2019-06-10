@@ -103,14 +103,14 @@ __get_installed_candidate_all_versions() {
 # Parameters:
 # $1: chosen candidate label
 __get_installed_candidate_installed_versions() {
-  __get_installed_candidate_all_versions $1 | egrep "\*" | sed 's/\*//g' | sed 's/>//g' | sed -e 's/[\t ]/\n/g;/^$/d' | sed -r '/^\s*$/d'
+  __get_installed_candidate_all_versions $1 | egrep "\*" | sed 's/\*//g' | sed 's/>//g' | sed -e 's/[\t ]/\n/g;/^$/d' | awk 'NF > 0'
 }
 
 # Gets versions of a candidate that are not yet installed
 # Parameters:
 # $1: chosen candidate label
 __get_installed_candidate_not_installed_versions() {
-  __get_installed_candidate_all_versions $1 | egrep -v "\*" | sed 's/\*//g' | sed 's/>//g' | sed -e 's/[\t ]/\n/g;/^$/d' | sed -r '/^\s*$/d'
+  __get_installed_candidate_all_versions $1 | egrep -v "\*" | sed 's/\*//g' | sed 's/>//g' | sed -e 's/[\t ]/\n/g;/^$/d' | awk 'NF > 0'
 }
 
 ########################################################
