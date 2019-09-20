@@ -3,6 +3,7 @@
 This sdkman plugin aims at making [sdkman](https://sdkman.io) usage easier with completion scripts.
 
 ![zsh-sdkman usage gif](./zsh-sdkman-usage.gif?raw=true "Optional Title")
+[![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2Fmatthieusb%2Fzsh-sdkman.svg?type=shield)](https://app.fossa.io/projects/git%2Bgithub.com%2Fmatthieusb%2Fzsh-sdkman?ref=badge_shield)
 
 ## Installation
 
@@ -101,3 +102,7 @@ alias sdko='sdk offline'
 alias sdksu='sdk selfupdate'
 alias sdkf='sdk flush'
 ```
+
+
+## License
+[![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2Fmatthieusb%2Fzsh-sdkman.svg?type=large)](https://app.fossa.io/projects/git%2Bgithub.com%2Fmatthieusb%2Fzsh-sdkman?ref=badge_large)
