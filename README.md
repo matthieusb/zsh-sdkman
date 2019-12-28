@@ -87,17 +87,17 @@ Usage: sdk <command> [candidate] [version]
 
 Some aliases are available through this plugin:
 
-```
-alias sdki='sdk install'
-alias sdkun='sdk uninstall'
-alias list='sdk list'
-alias sdku='sdk use'
-alias sdkd='sdk default'
-alias sdkc='sdk current'
-alias sdkup='sdk upgrade'
-alias sdkv='sdk version'
-alias sdkb='sdk broadcast'
-alias sdko='sdk offline'
-alias sdksu='sdk selfupdate'
-alias sdkf='sdk flush'
-```
+| Alias         | Command     |
+| ------------- |-------------|
+| sdki | sdk install    |
+| sdkun | sdk uninstall |
+| list | sdk list  |
+| sdku | sdk use  |
+| sdkd | sdk default  |
+| sdkc | sdk current  |
+| sdkup | sdk upgrade  |
+| sdkv | sdk version  |
+| sdkb | sdk broadcast  |
+| sdko | sdk offline  |
+| sdksu | sdk selfupdate|  
+| sdkf | sdk flush  |
