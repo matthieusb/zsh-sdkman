@@ -31,6 +31,8 @@ And then, add to to your *.zshrc* plugin list like this:
 plugins=(... zsh-sdkman)
 ```
 
+**note:** cloning of zsh-sdkman requires the [Git Large File Storage](https://git-lfs.github.com/) Git extension.
+
 ## Dependencies
 
 There are several packages that you'll need for this plugin to work:
