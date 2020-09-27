@@ -83,13 +83,13 @@ __generate_all_candidate_folders_and_files() {
 ########################################################
 
 _sdkman_get_candidate_and_versions_lists_into_files() {
-  (sdk list | grep --color=never  "$ sdk install" | sed 's/\$ sdk install //g' | sed -e 's/[\t ]//g;/^$/d' > $ZSH_SDKMAN_CANDIDATE_LIST_FILE \
+  (sdk list | grep --color=never  "$ sdk install" | sed 's/\$ sdk install //g' | sed -e 's/[[:blank:]]//g;/^$/d' > $ZSH_SDKMAN_CANDIDATE_LIST_FILE \
   && __generate_all_candidate_folders_and_files &
   )
 }
 
 _sdkman_get_current_installed_list_into_file() {
-  (sdk current | sed "s/Using://g" | sed "s/\:.*//g"  | sed -e "s/[\t ]//g;/^$/d" | egrep --color=never -i -v ".*(sdkupdate|WARNING).*" > $ZSH_SDKMAN_INSTALLED_LIST_FILE &)
+  (sdk current | sed "s/Using://g" | sed "s/\:.*//g"  | sed -e "s/[[:blank:]]//g;/^$/d" | egrep --color=never -i -v ".*(sdkupdate|WARNING).*" > $ZSH_SDKMAN_INSTALLED_LIST_FILE &)
 }
 
 # Gets a candidate available versions (All of them, including already installed, not installed ...)
