@@ -28,18 +28,10 @@ alias sdkf='sdk flush'
 
 # WARNING: We are setting this as a local variable because we don't have it yet at the time of initialization
 # A better approach would be welcome
-if [ -z "${SDKMAN_DIR}" ]; then
-  SDKMAN_DIR_LOCAL=~/.sdkman
-else
-  SDKMAN_DIR_LOCAL="$SDKMAN_DIR"
-fi
+SDKMAN_DIR_LOCAL=${SDKMAN_DIR:-$HOME/.sdkman}
 
 # Custom variables for later in this script and in the completion script
-if [ -z "${ZSH_SDKMAN_DIR_LOCAL}" ]; then
-  export ZSH_SDKMAN_DIR_LOCAL=~/.zsh-sdkman
-else
-  export ZSH_SDKMAN_DIR_LOCAL="$ZSH_SDKMAN_DIR_LOCAL"
-fi
+ZSH_SDKMAN_DIR_LOCAL=${ZSH_SDKMAN_DIR:-$HOME/.zsh-sdkman}
 
 export ZSH_SDKMAN_CANDIDATES_HOME=$ZSH_SDKMAN_DIR_LOCAL/candidates
 
