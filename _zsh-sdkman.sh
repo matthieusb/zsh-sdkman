@@ -112,8 +112,8 @@ __describe_offline() {
   local -a offline
 
   offline=(
-    'enabled'
-    'disabled'
+    'enable'
+    'disable'
   )
 
   _describe -t offline "Offline" offline && ret=0
