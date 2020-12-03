@@ -14,7 +14,10 @@ zstyle ':completion:*:descriptions' format '%B%d%b'
 
 # Gets candidate lists and removes all unecessery things just to get candidate names
 __get_candidate_list() {
-  cat $ZSH_SDKMAN_CANDIDATE_LIST_FILE
+  local -a candidates_csv
+  # Load the candidates from SDKMAN's candidates file, split at commas
+  candidates_csv=$(<"${SDKMAN_DIR}/var/candidates")
+  echo ${(s:,:)candidates_csv}
 }
 
 # Gets installed candidates list
