@@ -32,6 +32,8 @@ And then, add to to your *.zshrc* plugin list like this:
 plugins=(... zsh-sdkman)
 ```
 
+**note:** cloning of zsh-sdkman requires the [Git Large File Storage](https://git-lfs.github.com/) Git extension.
+
 ## Dependencies
 
 There are several packages that you'll need for this plugin to work:
@@ -102,7 +104,6 @@ alias sdko='sdk offline'
 alias sdksu='sdk selfupdate'
 alias sdkf='sdk flush'
 ```
-
 
 ## License
 [![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2Fmatthieusb%2Fzsh-sdkman.svg?type=large)](https://app.fossa.io/projects/git%2Bgithub.com%2Fmatthieusb%2Fzsh-sdkman?ref=badge_large)
