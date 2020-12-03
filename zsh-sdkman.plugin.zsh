@@ -35,7 +35,6 @@ ZSH_SDKMAN_DIR_LOCAL=${ZSH_SDKMAN_DIR:-$HOME/.zsh-sdkman}
 
 export ZSH_SDKMAN_CANDIDATES_HOME=$ZSH_SDKMAN_DIR_LOCAL/candidates
 
-export ZSH_SDKMAN_CANDIDATE_LIST_FILE=$ZSH_SDKMAN_DIR_LOCAL/candidate-list
 export ZSH_SDKMAN_INSTALLED_LIST_FILE=$ZSH_SDKMAN_DIR_LOCAL/current-installed-list
 
 export ZSH_SDKMAN_INSTALLED_CANDIDATES_FILE_NAME=installed-candidates
@@ -55,38 +54,9 @@ __init_plugin_folder() {
   mkdir -p $ZSH_SDKMAN_CANDIDATES_HOME
 }
 
-# Generates the folders for all candidates available in sdkman
-# Adds files containing the necessary info afterwards
-# WARNING: this method takes time and should be launched in background
-__generate_all_candidate_folders_and_files() {
-  while read candidate; do
-    local -a current_candidate_folder_path
-    current_candidate_folder_path=$ZSH_SDKMAN_CANDIDATES_HOME/$candidate
-
-    mkdir -p $current_candidate_folder_path
-
-    # Filling not installed candidates file
-    __get_installed_candidate_not_installed_versions > $current_candidate_folder_path/$ZSH_SDKMAN_NOT_INSTALLED_CANDIDATES_FILE_NAME $candidate
-
-    # Filling installed candidates file
-    __get_installed_candidate_installed_versions > $current_candidate_folder_path/$ZSH_SDKMAN_INSTALLED_CANDIDATES_FILE_NAME $candidate
-
-    # Filling all_candidates file
-    __get_installed_candidate_installed_versions > $current_candidate_folder_path/$ZSH_SDKMAN_ALL_CANDIDATES_FILE_NAME $candidate
-    __get_installed_candidate_not_installed_versions >> $current_candidate_folder_path/$ZSH_SDKMAN_ALL_CANDIDATES_FILE_NAME $candidate
-
-  done < $ZSH_SDKMAN_CANDIDATE_LIST_FILE
-}
-
 ########################################################
 ##### SDK COMMANDS
 ########################################################
-
-_sdkman_get_candidate_and_versions_lists_into_files() {
-  (sdk list | grep --color=never  "$ sdk install" | sed 's/\$ sdk install //g' | sed -e 's/[\t ]//g;/^$/d' > $ZSH_SDKMAN_CANDIDATE_LIST_FILE \
-  && __generate_all_candidate_folders_and_files &
-  )
-}
 
 _sdkman_get_current_installed_list_into_file() {
   (sdk current | sed "s/Using://g" | sed "s/\:.*//g"  | sed -e "s/[\t ]//g;/^$/d" | egrep --color=never -i -v ".*(sdkupdate|WARNING).*" > $ZSH_SDKMAN_INSTALLED_LIST_FILE &)
@@ -131,7 +101,6 @@ source "$SDKMAN_DIR_LOCAL/bin/sdkman-init.sh"
 _init_zsh-sdkman_plugin() {
   __init_plugin_folder
 
-  _sdkman_get_candidate_and_versions_lists_into_files "$@"
   _sdkman_get_current_installed_list_into_file "$@"
 }
 
