@@ -3,6 +3,7 @@
 This sdkman plugin aims at making [sdkman](https://sdkman.io) usage easier with completion scripts.
 
 ![zsh-sdkman usage gif](./zsh-sdkman-usage.gif?raw=true "Optional Title")
+[![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2Fmatthieusb%2Fzsh-sdkman.svg?type=shield)](https://app.fossa.io/projects/git%2Bgithub.com%2Fmatthieusb%2Fzsh-sdkman?ref=badge_shield)
 
 ## Installation
 
@@ -89,17 +90,20 @@ Usage: sdk <command> [candidate] [version]
 
 Some aliases are available through this plugin:
 
-| Alias         | Command     |
-| ------------- |-------------|
-| sdki | sdk install    |
-| sdkun | sdk uninstall |
-| list | sdk list  |
-| sdku | sdk use  |
-| sdkd | sdk default  |
-| sdkc | sdk current  |
-| sdkup | sdk upgrade  |
-| sdkv | sdk version  |
-| sdkb | sdk broadcast  |
-| sdko | sdk offline  |
-| sdksu | sdk selfupdate|  
-| sdkf | sdk flush  |
+```
+alias sdki='sdk install'
+alias sdkun='sdk uninstall'
+alias list='sdk list'
+alias sdku='sdk use'
+alias sdkd='sdk default'
+alias sdkc='sdk current'
+alias sdkup='sdk upgrade'
+alias sdkv='sdk version'
+alias sdkb='sdk broadcast'
+alias sdko='sdk offline'
+alias sdksu='sdk selfupdate'
+alias sdkf='sdk flush'
+```
+
+## License
+[![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2Fmatthieusb%2Fzsh-sdkman.svg?type=large)](https://app.fossa.io/projects/git%2Bgithub.com%2Fmatthieusb%2Fzsh-sdkman?ref=badge_large)
