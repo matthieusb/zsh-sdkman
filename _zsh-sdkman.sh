@@ -73,6 +73,8 @@ __describe_commands() {
     'list: list all available packages or  '
     'use: change the version of an existing program'
     'default: set a program default version'
+    'home: get the absolute path of a SDK'
+    'env: manage .sdkmanrc configuration file'
     'current: display all programs current running version'
     'upgrade: upgrade all current programs or a particular one'
     'version: display current sdkman version'
@@ -80,6 +82,7 @@ __describe_commands() {
     'help: display commands help'
     'offline: Toggle offline mode'
     'selfupdate: update sdkman itself'
+    'update: refresh the candidate cache'
     'flush: flush sdkman local state'
   )
 
@@ -117,6 +120,11 @@ __describe_offline() {
   )
 
   _describe -t offline "Offline" offline && ret=0
+}
+
+__describe_env() {
+  local -a env=( 'init: Create a .sdkmanrc in the current directory' )
+  _describe -t env "Environment creation" env && ret=0
 }
 
 ########################################################
@@ -184,6 +192,12 @@ function _sdk() {
           default)
             __describe_current_installed_list "Candidates available for default setting"
             ;;
+          home)
+            __describe_current_installed_list "Candidates available for usage"
+            ;;
+          env)
+            __describe_env
+            ;;
           current)
             __describe_current_installed_list "Candidates available"
             ;;
@@ -209,6 +223,9 @@ function _sdk() {
             __describe_candidate_all_versions $candidate
             ;;
           default)
+            __describe_candidate_installed_versions $candidate
+            ;;
+          home)
             __describe_candidate_installed_versions $candidate
             ;;
           *)
