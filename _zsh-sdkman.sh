@@ -46,7 +46,7 @@ __get_installed_candidate_all_versions() {
       versions=( $(sdk list "$candidate" | grep '|' | cut -d\| -f6 | grep -v Identifier) )
     else
       # Replace special chars with spaces, break everything into newlines and clean it up.
-      versions=( $(sdk list "$candidate" | grep '^ ' | tr '+*>' '   ' | sed -e 's, ,\n,g' | sed -e '/^$/d' ) )
+      versions=( ${=$(sdk list "$candidate" | grep '^ ' | tr '+*>' '   ')} )
     fi
     # Save the versions to the cache file.
     echo $versions > "$versions_file"
