@@ -35,8 +35,6 @@ ZSH_SDKMAN_DIR_LOCAL=${ZSH_SDKMAN_DIR:-$HOME/.zsh-sdkman}
 
 export ZSH_SDKMAN_CANDIDATES_HOME=$ZSH_SDKMAN_DIR_LOCAL/candidates
 
-export ZSH_SDKMAN_INSTALLED_LIST_FILE=$ZSH_SDKMAN_DIR_LOCAL/current-installed-list
-
 export ZSH_SDKMAN_INSTALLED_CANDIDATES_FILE_NAME=installed-candidates
 export ZSH_SDKMAN_NOT_INSTALLED_CANDIDATES_FILE_NAME=not-installed-candidates
 export ZSH_SDKMAN_ALL_CANDIDATES_FILE_NAME=all-candidates
@@ -57,10 +55,6 @@ __init_plugin_folder() {
 ########################################################
 ##### SDK COMMANDS
 ########################################################
-
-_sdkman_get_current_installed_list_into_file() {
-  (sdk current | sed "s/Using://g" | sed "s/\:.*//g"  | sed -e "s/[\t ]//g;/^$/d" | egrep --color=never -i -v ".*(sdkupdate|WARNING).*" > $ZSH_SDKMAN_INSTALLED_LIST_FILE &)
-}
 
 # Gets a candidate available versions (All of them, including already installed, not installed ...)
 # Parameters:
@@ -100,8 +94,6 @@ source "$SDKMAN_DIR_LOCAL/bin/sdkman-init.sh"
 # Initialize files with available candidate list and currently installed candidates
 _init_zsh-sdkman_plugin() {
   __init_plugin_folder
-
-  _sdkman_get_current_installed_list_into_file "$@"
 }
 
 # Only refreshes the file containing info for completion when:
