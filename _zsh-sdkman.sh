@@ -22,7 +22,7 @@ __get_candidate_list() {
 
 # Gets installed candidates list
 __get_current_installed_list() {
-  cat $ZSH_SDKMAN_INSTALLED_LIST_FILE
+  ( cd "$SDKMAN_DIR/candidates" && echo *(F) )
 }
 
 # Gets a candidate available versions (All of them, including already installed, not installed ...)
