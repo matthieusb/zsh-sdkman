@@ -42,13 +42,8 @@ __get_installed_candidate_all_versions() {
 # Parameters:
 # $1: chosen candidate label
 __get_installed_candidate_installed_versions() {
-  local -a chosen_candidate_home
-  local -a chosen_candidate_installed_versions_file
-
-  chosen_candidate_home=$ZSH_SDKMAN_CANDIDATES_HOME/$1
-  chosen_candidate_installed_versions_file=$chosen_candidate_home/$ZSH_SDKMAN_INSTALLED_CANDIDATES_FILE_NAME
-
-  cat $chosen_candidate_installed_versions_file
+  local candidate_dir="${SDKMAN_DIR}/candidates/$1"
+  ( [[ -d "$candidate_dir" ]] && cd "$candidate_dir" && echo *(F) )
 }
 
 # Gets versions of a candidate that are not yet installed
