@@ -67,13 +67,10 @@ __get_installed_candidate_installed_versions() {
 # Parameters:
 # $1: chosen candidate label
 __get_installed_candidate_not_installed_versions() {
-  local -a chosen_candidate_home
-  local -a chosen_candidate_not_installed_versions_file
-
-  chosen_candidate_home=$ZSH_SDKMAN_CANDIDATES_HOME/$1
-  chosen_candidate_not_installed_versions_file=$chosen_candidate_home/$ZSH_SDKMAN_NOT_INSTALLED_CANDIDATES_FILE_NAME
-
-  cat $chosen_candidate_not_installed_versions_file
+  local candidate="$1"
+  local -a installed=( $( __get_installed_candidate_installed_versions "$candidate" ) )
+  local -a all=( $( __get_installed_candidate_all_versions "$candidate" ) )
+  echo ${(@)all:|installed}
 }
 
 ########################################################
