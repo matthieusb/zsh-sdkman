@@ -14,51 +14,63 @@ zstyle ':completion:*:descriptions' format '%B%d%b'
 
 # Gets candidate lists and removes all unecessery things just to get candidate names
 __get_candidate_list() {
-  cat $ZSH_SDKMAN_CANDIDATE_LIST_FILE
+  local -a candidates_csv
+  # Load the candidates from SDKMAN's candidates file, split at commas
+  candidates_csv=$(<"${SDKMAN_DIR}/var/candidates")
+  echo ${(s:,:)candidates_csv}
 }
 
 # Gets installed candidates list
 __get_current_installed_list() {
-  cat $ZSH_SDKMAN_INSTALLED_LIST_FILE
+  ( cd "$SDKMAN_DIR/candidates" && echo *(F) )
 }
 
 # Gets a candidate available versions (All of them, including already installed, not installed ...)
 # Parameters:
 # $1 chosen candidate label
 __get_installed_candidate_all_versions() {
-  local -a chosen_candidate_home
-  local -a chosen_candidate_all_versions_file
+  local candidate=$1
+  local candidate_dir="${ZSH_SDKMAN_CACHE}/candidates/$1"
+  local versions_file="${candidate_dir}/versions"
 
-  chosen_candidate_home=$ZSH_SDKMAN_CANDIDATES_HOME/$1
-  chosen_candidate_all_versions_file=$chosen_candidate_home/$ZSH_SDKMAN_ALL_CANDIDATES_FILE_NAME
-
-  cat $chosen_candidate_all_versions_file
+  # Create cache directory if not present
+  [[ ! -d "$candidate_dir" ]] && mkdir -p "$candidate_dir"
+  # If file is not present or older than 12 hours, recreate cache file
+  if [[ ! -e "$versions_file" || -n "$versions_file"(.mm+11N) ]]
+  then
+    local -a versions
+    # The formatting of java is different from other outputs:
+    if [[ "$candidate" = "java" ]]
+    then
+      # Get everything in the last column of the table, excluding the header.
+      versions=( $(sdk list "$candidate" | grep '|' | cut -d\| -f6 | grep -v Identifier) )
+    else
+      # Replace special chars with spaces, break everything into newlines and clean it up.
+      versions=( ${=$(sdk list "$candidate" | grep '^ ' | tr '+*>' '   ')} )
+    fi
+    # Save the versions to the cache file.
+    echo $versions > "$versions_file"
+  fi
+  # Load list from cache file. (ZSH will sort it automatically.)
+  echo $(<"$versions_file")
 }
 
 # Gets a candidate currently installed versions (the ones preceded by a "*")
 # Parameters:
 # $1: chosen candidate label
 __get_installed_candidate_installed_versions() {
-  local -a chosen_candidate_home
-  local -a chosen_candidate_installed_versions_file
-
-  chosen_candidate_home=$ZSH_SDKMAN_CANDIDATES_HOME/$1
-  chosen_candidate_installed_versions_file=$chosen_candidate_home/$ZSH_SDKMAN_INSTALLED_CANDIDATES_FILE_NAME
-
-  cat $chosen_candidate_installed_versions_file
+  local candidate_dir="${SDKMAN_DIR}/candidates/$1"
+  ( [[ -d "$candidate_dir" ]] && cd "$candidate_dir" && echo *(F) )
 }
 
 # Gets versions of a candidate that are not yet installed
 # Parameters:
 # $1: chosen candidate label
 __get_installed_candidate_not_installed_versions() {
-  local -a chosen_candidate_home
-  local -a chosen_candidate_not_installed_versions_file
-
-  chosen_candidate_home=$ZSH_SDKMAN_CANDIDATES_HOME/$1
-  chosen_candidate_not_installed_versions_file=$chosen_candidate_home/$ZSH_SDKMAN_NOT_INSTALLED_CANDIDATES_FILE_NAME
-
-  cat $chosen_candidate_not_installed_versions_file
+  local candidate="$1"
+  local -a installed=( $( __get_installed_candidate_installed_versions "$candidate" ) )
+  local -a all=( $( __get_installed_candidate_all_versions "$candidate" ) )
+  echo ${(@)all:|installed}
 }
 
 ########################################################
