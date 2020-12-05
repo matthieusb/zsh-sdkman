@@ -232,7 +232,7 @@ function _sdk() {
             __describe_candidate_installed_versions $candidate
             ;;
           use)
-            __describe_candidate_all_versions $candidate
+            __describe_candidate_installed_versions $candidate
             ;;
           default)
             __describe_candidate_installed_versions $candidate
