@@ -2,9 +2,10 @@
 
 This sdkman plugin aims at making [sdkman](https://sdkman.io) usage easier with completion scripts.
 
-> 👷 Usage gif is out of date
+> 👷 Need to add an up to date usage gif
 
-![zsh-sdkman usage gif](./zsh-sdkman-usage.gif?raw=true "zsh-sdkman usage gif with several command examples")
+[//]: # (![zsh-sdkman usage gif]&#40;./zsh-sdkman-usage.gif?raw=true "zsh-sdkman usage gif with several command examples"&#41;)
+
 [![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2Fmatthieusb%2Fzsh-sdkman.svg?type=shield)](https://app.fossa.io/projects/git%2Bgithub.com%2Fmatthieusb%2Fzsh-sdkman?ref=badge_shield)
 
 ## Installation
@@ -62,7 +63,7 @@ plugins=(... zsh-sdkman)
 Sdkman can be used as usual:
 ```
 SYNOPSIS
-    sdk <subcommand> [candidate] [version]
+   sdk <subcommand> [candidate] [version]
    candidate  :  the SDK to install: groovy, scala, grails, gradle, kotlin, etc.
                  use list command for comprehensive list of candidates
                  eg: $ sdk list
@@ -108,6 +109,15 @@ alias sdko='sdk offline'
 alias sdksu='sdk selfupdate'
 alias sdkf='sdk flush'
 ```
+
+## Development
+
+<details><summary>Open for development instructions</summary>
+
+TODO
+
+</details>
+
 
 ## License
 [![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2Fmatthieusb%2Fzsh-sdkman.svg?type=large)](https://app.fossa.io/projects/git%2Bgithub.com%2Fmatthieusb%2Fzsh-sdkman?ref=badge_large)
