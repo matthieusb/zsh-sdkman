@@ -13,7 +13,7 @@ testEquality() {
 # }
 
 testMavenCandidates() {
-  dockerize -wait file:///root/.zsh-sdkman/candidates/maven/installed-candidates -timeout 300s
+  #dockerize -wait file:///root/.zsh-sdkman/candidates/maven/installed-candidates -timeout 300s
   sleep 2
   candidatesFirst=`cat ~/.zsh-sdkman/candidates/maven/installed-candidates | head -n 1`
   assertEquals '3.5.0' "${candidatesFirst}"
