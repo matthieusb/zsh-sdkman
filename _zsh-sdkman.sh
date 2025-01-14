@@ -12,12 +12,14 @@ zstyle ':completion:*:descriptions' format '%B%d%b'
 ##### UTILITY FUNCTIONS
 ########################################################
 
-# Gets candidate lists and removes all unecessery things just to get candidate names
+# Gets candidate lists and cleanses output just to get candidate names
 __get_candidate_list() {
   local -a candidates_csv
   # Load the candidates from SDKMAN's candidates file, split at commas
   candidates_csv=$(<"${SDKMAN_DIR}/var/candidates")
   echo ${(s:,:)candidates_csv}
+
+  unset candidates_csv
 }
 
 # Gets installed candidates list
@@ -30,29 +32,22 @@ __get_current_installed_list() {
 # $1 chosen candidate label
 __get_installed_candidate_all_versions() {
   local candidate=$1
-  local candidate_dir="${ZSH_SDKMAN_CACHE}/candidates/$1"
-  local versions_file="${candidate_dir}/versions"
+  local -a versions
 
-  # Create cache directory if not present
-  [[ ! -d "$candidate_dir" ]] && mkdir -p "$candidate_dir"
-  # If file is not present or older than 12 hours, recreate cache file
-  if [[ ! -e "$versions_file" || -n "$versions_file"(.mm+11N) ]]
+  if [[ "$candidate" = "java" ]]
   then
-    local -a versions
-    # The formatting of java is different from other outputs:
-    if [[ "$candidate" = "java" ]]
-    then
-      # Get everything in the last column of the table, excluding the header.
-      versions=( $(sdk list "$candidate" | grep '|' | cut -d\| -f6 | grep -v Identifier) )
-    else
-      # Replace special chars with spaces, break everything into newlines and clean it up.
-      versions=( ${=$(sdk list "$candidate" | grep '^ ' | tr '+*>' '   ')} )
-    fi
-    # Save the versions to the cache file.
-    echo $versions > "$versions_file"
+    # Get everything in the last column of the table, excluding the header.
+    versions=( $(sdk list "$candidate" | grep '|' | cut -d\| -f6 | grep -v Identifier) )
+  else
+    # Replace special chars with spaces, break everything into newlines and clean it up.
+    versions=( ${=$(sdk list "$candidate" | grep '^ ' | tr '+*>' '   ')} )
   fi
+
   # Load list from cache file. (ZSH will sort it automatically.)
-  echo $(<"$versions_file")
+  echo ${versions}
+
+  unset candidate
+  unset versions
 }
 
 # Gets a candidate currently installed versions (the ones preceded by a "*")
@@ -61,6 +56,8 @@ __get_installed_candidate_all_versions() {
 __get_installed_candidate_installed_versions() {
   local candidate_dir="${SDKMAN_DIR}/candidates/$1"
   ( [[ -d "$candidate_dir" ]] && cd "$candidate_dir" && echo *(F) )
+
+  unset candidate_dir
 }
 
 # Gets versions of a candidate that are not yet installed
@@ -70,7 +67,12 @@ __get_installed_candidate_not_installed_versions() {
   local candidate="$1"
   local -a installed=( $( __get_installed_candidate_installed_versions "$candidate" ) )
   local -a all=( $( __get_installed_candidate_all_versions "$candidate" ) )
+
   echo ${(@)all:|installed}
+
+  unset all
+  unset installed
+  unset candidate
 }
 
 ########################################################
@@ -81,8 +83,8 @@ __describe_commands() {
   local -a commands
   commands=(
     'install: install a program'
-    'uninstall: uninstal an existing program'
-    'list: list all available packages or  '
+    'uninstall: uninstall an existing program'
+    'list: list all available packages or  candidates'
     'use: change the version of an existing program'
     'default: set a program default version'
     'home: get the absolute path of a SDK'
@@ -99,6 +101,8 @@ __describe_commands() {
   )
 
   _describe -t commands "Commands" commands && ret=0
+
+  unset commands
 }
 
 ########################################################
@@ -112,6 +116,8 @@ __describe_candidate_list() {
   local -a candidate_list
   candidate_list=( $( __get_candidate_list ) )
   _describe -t candidate_list $1 candidate_list && ret=0
+
+  unset candidate_list
 }
 
 # Displays installed candidates available
@@ -121,6 +127,8 @@ __describe_current_installed_list() {
   local -a current_installed_list
   current_installed_list=( $( __get_current_installed_list ) )
   _describe -t current_installed_list $1 current_installed_list && ret=0
+
+  unset current_installed_list
 }
 
 __describe_offline() {
@@ -132,11 +140,15 @@ __describe_offline() {
   )
 
   _describe -t offline "Offline" offline && ret=0
+
+  unset offline
 }
 
 __describe_env() {
   local -a env=( 'init: Create a .sdkmanrc in the current directory' )
   _describe -t env "Environment creation" env && ret=0
+
+  unset env
 }
 
 ########################################################
@@ -149,6 +161,8 @@ __describe_candidate_all_versions() {
   local -a installed_candidate_all_versions
   installed_candidate_all_versions=( $( __get_installed_candidate_all_versions $1 ) )
   _describe -t installed_candidate_all_versions "All versions for $1" installed_candidate_all_versions && ret=0
+
+  unset installed_candidate_all_versions
 }
 
 # Parameters:
@@ -157,6 +171,8 @@ __describe_candidate_installed_versions() {
   local -a installed_candidate_installed_versions
   installed_candidate_installed_versions=( $( __get_installed_candidate_installed_versions $1 ) )
   _describe -t installed_candidate_installed_versions "Installed versions for $1" installed_candidate_installed_versions && ret=0
+
+  unset installed_candidate_installed_versions
 }
 
 # Parameters:
@@ -165,6 +181,8 @@ __describe_candidate_available_versions() {
   local -a installed_candidate_available_versions
   installed_candidate_available_versions=( $( __get_installed_candidate_not_installed_versions $1 ) )
   _describe -t installed_candidate_available_versions "Available (not installed) versions for $1" installed_candidate_available_versions && ret=0
+
+  unset installed_candidate_available_versions
 }
 
 ########################################################
@@ -249,6 +267,13 @@ function _sdk() {
 }
 
 _sdk "$@"
+
+unset _sdk
+unset __get_candidate_list
+unset __get_current_installed_list
+unset __get_installed_candidate_all_versions
+unset __get_installed_candidate_installed_versions
+unset __get_installed_candidate_not_installed_versions
 
 # Local Variables:
 # mode: Shell-Script
