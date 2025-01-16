@@ -1,4 +1,4 @@
-FROM ubuntu:18.04
+FROM ubuntu:latest
 
 # -- Env variables
 ENV TERM "xterm-256color"
